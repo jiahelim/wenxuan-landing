@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://jiahelim.github.io/sitemap-index.xml
+Sitemap: https://landing.wenxuan.edu.sg/sitemap-index.xml
