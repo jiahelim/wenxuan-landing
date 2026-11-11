@@ -1,0 +1,586 @@
+---
+// 英语口语课 landing page, rebuilt from the two-page flyer
+// (00_Sources/eng_chi_class/Scan_20261029_transcription.md). Copy is the flyer's
+// Simplified Chinese text, lightly edited. Same structure as /landing/ai-diploma.
+// Price, bundle ladder, six levels, class times and class size follow the school's Nov 2026 offer
+// message (00_Sources/eng_chi_class/offer_20261111.md), which supersedes the flyer on those points.
+// Palette: --color-wx-teal / --color-wx-orange / --color-wx-pill-* in src/assets/styles/tailwind.css.
+// Open questions for the client (price, 美国外教 claim, IELTS / full-time details,
+// WeChat ID): see the transcription's notes. The WeChat ID and QR are left off until confirmed.
+import { Image } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
+
+import Layout from '~/layouts/Layout.astro';
+import Steps from '~/components/widgets/Steps.astro';
+import WhatsAppButton from '~/components/widgets/WhatsAppButton.astro';
+
+import logo from '~/assets/images/wenxuan/logo.png';
+// Pexels photo 7395452 (free under the Pexels licence), replaces the low-res flyer crop photo-hero-student-smiling.png
+import conversation from '~/assets/images/wenxuan/english/conversation-pexels.jpg';
+// Pexels photo 5756567 (free under the Pexels licence), adult learners in class
+import adultClass from '~/assets/images/wenxuan/english/adult-class-pexels.jpg';
+// Pexels photo 7683700 (free under the Pexels licence), replaces the flyer crop photo-students-on-steps.png
+import studyGroup from '~/assets/images/wenxuan/english/study-group-pexels.jpg';
+
+const metadata = {
+  title: '英语口语课 | 汶轩教育管理学院',
+  description:
+    '固定美国外教名师，助你赢在口语起跑线。情景演练、小班教学、兴趣引导，零基础到高级共 6 个等级，现在优惠 $980 一个等级，5 到 10 人一班。',
+  openGraph: { type: 'website' },
+};
+
+// The flyer's three coloured pills: light blue / yellow / red
+const sellingPoints = [
+  { label: '情景演练', class: 'bg-wx-pill-blue text-wx-teal-ink' },
+  { label: '小班教学', class: 'bg-wx-pill-yellow text-slate-900' },
+  { label: '兴趣引导', class: 'bg-wx-pill-red text-white' },
+];
+
+// The offer message lists the six level names only; one-line descriptions are kept generic.
+const levels = [
+  { name: '零基础', description: '从零开始，打好发音、常用词汇和日常会话的基础。' },
+  { name: '初级', description: '在生活情景中开口说英语，掌握基本语法和常用表达。' },
+  { name: '初中级', description: '扩大词汇量，把句子说完整，应对更多日常话题。' },
+  { name: '中级', description: '通过实例讨论和情景演练，流利地进行工作与生活交流。' },
+  { name: '中高级', description: '表达更自然、更有条理，能参与较深入的讨论。' },
+  { name: '高级', description: '自信、准确地表达观点，提高英语应用能力和专业领域的技能。' },
+];
+
+// Offer: one level $980 (was $1280); every further level booked at the same time adds $600.
+const price = { now: 980, was: 1280, extra: 600 };
+const bundles = levels.map((_, i) => {
+  const count = i + 1;
+  const total = price.now + price.extra * i;
+  return { count, total, saved: price.was * count - total, average: Math.round(total / count) };
+});
+const money = (n: number) => `$${n.toLocaleString('en-US')}`;
+const fees = [
+  { label: '报名费', amount: 80, note: '' },
+  { label: '学杂费', amount: 108, note: '包含教材、考试、证书' },
+];
+
+// The three classes teach the same content within a week, so a student can attend any of them.
+const classes = [
+  { name: '早班', icon: 'tabler:sunrise', rhythm: '每周两个早上，每次 2 小时', times: ['上午 9:30 – 11:30'] },
+  { name: '晚班', icon: 'tabler:moon', rhythm: '每周两个晚上，每次 2 小时', times: ['晚上 7:00 – 9:00'] },
+  {
+    name: '礼拜天班',
+    icon: 'tabler:calendar-event',
+    rhythm: '每周一次，一次 4 小时，中间有休息',
+    times: ['上午 9:30 – 下午 1:30', '下午 2:00 – 6:00'],
+  },
+];
+const afternoonSlots = ['下午早班 1:00 – 3:00', '下午晚班 3:30 – 5:30'];
+
+const courses = [
+  {
+    title: '成人英文课程',
+    note: '兼职班',
+    icon: 'tabler:briefcase',
+    body: '适合各种工作人士。',
+    tags: ['早班', '晚班', '礼拜天班'],
+  },
+  {
+    title: '雅思课程',
+    note: '兼职班、全职班',
+    icon: 'tabler:plane-departure',
+    body: '如果你需要尽快考试，以便申请预科，或申请其它的学校，或者出国工作的话，雅思入门班是最合适的选择。',
+    tags: [],
+  },
+  {
+    title: '全职英文课程',
+    note: '全日制班',
+    icon: 'tabler:clock-hour-4',
+    body: '全日制班是掌握英语最快的班，此课程会让你在短时间内掌握流利的英语。',
+    tags: [],
+  },
+];
+
+const tel = ['65183373', '65183393'];
+const email = 'wenxuansch@gmail.com';
+// WhatsApp (mobile), international format without '+': 65 + 9646 1887
+const whatsapp = '6596461887';
+const whatsappMessage = '您好，我想了解英语口语课程。';
+const whatsappHref = `https://wa.me/${whatsapp}?text=${encodeURIComponent(whatsappMessage)}`;
+// Tally form "英语口语课 咨询". While empty, the buttons fall back to opening an email.
+const tallyFormId = '5XbDoo';
+const enquireHref = `mailto:${email}?subject=${encodeURIComponent('咨询：英语口语课')}`;
+const trialHref = `mailto:${email}?subject=${encodeURIComponent('预约免费试听：英语口语课')}`;
+---
+
+<Layout metadata={metadata}>
+  <div lang="zh-Hans" class="bg-white text-slate-800">
+    <!-- Header: logo + school name, WhatsApp and 了解更多 (same as the AI diploma page) -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-200">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+        <a href="#top" class="flex items-center gap-3 min-w-0">
+          <Image src={logo} alt="汶轩教育管理学院校徽" class="h-10 w-auto shrink-0" loading="eager" />
+          <span class="font-bold text-wx-teal-ink text-lg truncate">汶轩教育管理学院</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+          <a href="#offer" class="hover:text-wx-teal-ink">优惠价格</a>
+          <a href="#levels" class="hover:text-wx-teal-ink">课程等级</a>
+          <a href="#schedule" class="hover:text-wx-teal-ink">上课时间</a>
+          <a href="#courses" class="hover:text-wx-teal-ink">课程类别</a>
+          <a href="#contact" class="hover:text-wx-teal-ink">地址</a>
+        </nav>
+        <div class="flex shrink-0 items-center gap-2">
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener"
+            aria-label="WhatsApp 咨询"
+            class="hidden sm:inline-flex items-center gap-2 rounded-full border-2 border-[#25d366] px-4 py-1.5 text-sm font-semibold text-[#128c7e] hover:bg-[#25d366]/10 transition"
+          >
+            <Icon name="tabler:brand-whatsapp" class="w-4 h-4" />
+            {whatsapp.slice(2)}
+          </a>
+          <a
+            href={enquireHref}
+            data-tally={tallyFormId || undefined}
+            class="inline-flex items-center gap-2 rounded-full bg-wx-orange px-4 py-2 text-sm font-semibold text-white hover:bg-wx-teal-ink transition"
+          >
+            了解更多
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- Hero: the flyer's teal panel with a curved right edge, title and pills on it, photo on the right -->
+      <section class="relative overflow-hidden bg-white">
+        <div
+          class="wx-panel absolute inset-x-0 top-0 h-[34rem] sm:h-[30rem] md:h-auto md:bottom-0 md:right-[38%] bg-wx-teal"
+          aria-hidden="true"
+        >
+        </div>
+        <div
+          class="relative max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16 grid md:grid-cols-[1.15fr_1fr] gap-10 md:gap-12 items-center"
+        >
+          <!-- Title block -->
+          <div class="text-white">
+            <span
+              class="inline-flex items-center gap-2 rounded-md bg-wx-orange px-3 py-1.5 text-sm font-semibold shadow"
+            >
+              <Image src={logo} alt="" class="h-5 w-auto rounded-sm bg-white p-0.5" />
+              汶轩教育管理学院
+            </span>
+            <h1 class="mt-5 text-6xl sm:text-7xl lg:text-8xl font-black leading-none tracking-wide drop-shadow">
+              英语口语课
+            </h1>
+            <p class="mt-5 text-xl sm:text-2xl font-bold leading-snug">
+              固定美国外教名师<span class="hidden sm:inline">　</span><br class="sm:hidden" />助你赢在口语起跑线
+            </p>
+            <ul class="mt-7 flex flex-wrap gap-3">
+              {
+                sellingPoints.map(({ label, class: c }) => (
+                  <li class:list={['rounded-xl px-5 py-2 text-lg sm:text-xl font-black italic shadow', c]}>
+                    {label}
+                  </li>
+                ))
+              }
+            </ul>
+            <div class="mt-8 flex flex-wrap gap-3">
+              <a
+                href={enquireHref}
+                data-tally={tallyFormId || undefined}
+                class="inline-flex items-center gap-2 rounded-full bg-wx-orange px-6 py-3 font-semibold text-white shadow hover:bg-wx-teal-ink transition"
+              >
+                了解更多
+                <Icon name="tabler:arrow-right" class="w-5 h-5" />
+              </a>
+              <a
+                href={trialHref}
+                data-tally={tallyFormId || undefined}
+                class="inline-flex items-center gap-2 rounded-full border-2 border-white bg-white px-6 py-3 font-semibold text-wx-teal-ink shadow hover:bg-wx-teal-mist transition"
+              >
+                免费试听
+                <Icon name="tabler:headset" class="w-5 h-5" />
+              </a>
+            </div>
+          </div>
+
+          <!-- Photo -->
+          <div class="relative mx-auto w-full max-w-md md:max-w-none">
+            <div class="aspect-square w-[88%] ml-auto rounded-full overflow-hidden ring-8 ring-white shadow-xl">
+              <Image
+                src={conversation}
+                alt="学生用英语轻松交流"
+                class="w-full h-full object-cover object-[60%_center]"
+                loading="eager"
+                fetchpriority="high"
+                widths={[400, 700, 1000]}
+                sizes="(min-width: 768px) 40vw, 90vw"
+              />
+            </div>
+            <div
+              class="absolute left-0 bottom-2 rotate-[-8deg] rounded-full bg-wx-pill-red px-5 py-4 text-center text-sm font-bold leading-tight text-white shadow-lg"
+            >
+              适合的<br />才是最好的
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Offer: price per level, then the bundle ladder -->
+      <section id="offer" class="scroll-mt-20 max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
+        <div
+          class="relative rounded-3xl bg-[#fff6e5] border-2 border-wx-orange/30 p-6 sm:p-10 shadow-sm grid md:grid-cols-[1.2fr_1fr] gap-8 items-center"
+        >
+          <Icon
+            name="tabler:gift"
+            class="absolute -top-6 right-6 h-14 w-14 rounded-2xl bg-wx-orange p-2.5 text-white shadow-lg"
+            aria-hidden="true"
+          />
+          <div>
+            <p class="text-sm font-semibold tracking-wide text-wx-orange">现在优惠价格</p>
+            <p class="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+              <span class="text-6xl sm:text-7xl font-black text-wx-pill-red">{money(price.now)}</span>
+              <span class="text-xl font-bold text-slate-700">/ 一个等级</span>
+              <span class="text-xl text-slate-500">原价 <s class="decoration-2">{money(price.was)}</s></span>
+            </p>
+            <p class="mt-4 text-lg leading-relaxed text-slate-700">
+              同时多报一个等级，每个只加 <strong class="text-wx-pill-red">{money(price.extra)}</strong>。<br
+              />早班、晚班、礼拜天班都可以上，不重复收费。
+            </p>
+          </div>
+          <ul class="grid gap-3">
+            <li class="flex items-center gap-4 rounded-2xl bg-white px-5 py-4 shadow-sm">
+              <Icon name="tabler:stairs-up" class="h-8 w-8 shrink-0 text-wx-teal" />
+              <div>
+                <p class="text-sm text-slate-500">学习进度</p>
+                <p class="text-xl font-bold text-wx-teal-ink">3个月一个等级</p>
+              </div>
+            </li>
+            <li class="flex items-center gap-4 rounded-2xl bg-white px-5 py-4 shadow-sm">
+              <Icon name="tabler:calendar-week" class="h-8 w-8 shrink-0 text-wx-teal" />
+              <div>
+                <p class="text-sm text-slate-500">上课时间</p>
+                <p class="text-xl font-bold text-wx-teal-ink">每周 4 小时</p>
+              </div>
+            </li>
+            <li class="flex items-center gap-4 rounded-2xl bg-white px-5 py-4 shadow-sm">
+              <Icon name="tabler:users-group" class="h-8 w-8 shrink-0 text-wx-teal" />
+              <div>
+                <p class="text-sm text-slate-500">班级人数</p>
+                <p class="text-xl font-bold text-wx-teal-ink">5–10 人小班</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Bundle ladder -->
+        <div class="mt-14 text-center">
+          <p class="text-wx-orange font-semibold tracking-wide">特别优惠</p>
+          <h2 class="mt-2 text-4xl md:text-5xl font-black text-wx-teal-ink">多报多省</h2>
+          <p class="mt-4 text-lg text-slate-700">
+            第一个等级 {money(price.now)}，同时报名的每一个等级只加 {money(price.extra)}。
+          </p>
+        </div>
+        <ol class="mt-8 grid grid-cols-2 md:grid-cols-3 gap-4">
+          {
+            bundles.map(({ count, total, saved, average }) => {
+              const best = count === bundles.length;
+              return (
+                <li
+                  class:list={[
+                    'relative rounded-2xl p-5 sm:p-6 shadow-md',
+                    best ? 'bg-wx-teal text-white ring-4 ring-wx-pill-yellow' : 'bg-white border border-slate-200',
+                  ]}
+                >
+                  {best && (
+                    <span class="absolute -top-3 right-4 rounded-full bg-wx-pill-yellow px-3 py-1 text-xs font-black text-slate-900 shadow">
+                      最划算
+                    </span>
+                  )}
+                  <p class:list={['font-semibold', best ? 'text-wx-teal-mist' : 'text-slate-500']}>
+                    {count === 1 ? '报一个等级' : `同时报 ${count} 个等级`}
+                  </p>
+                  <p class:list={['mt-1 text-4xl sm:text-5xl font-black', best ? 'text-white' : 'text-wx-pill-red']}>
+                    {money(total)}
+                  </p>
+                  <p class:list={['mt-2 text-sm', best ? 'text-wx-teal-mist' : 'text-slate-600']}>
+                    {count > 1 && (
+                      <>
+                        平均约 {money(average)} / 等级
+                        <br />
+                      </>
+                    )}
+                    比原价省 {money(saved)}
+                  </p>
+                </li>
+              );
+            })
+          }
+        </ol>
+        <dl class="mt-6 flex flex-wrap justify-center gap-x-8 gap-y-2 rounded-2xl bg-slate-50 px-5 py-4 text-slate-700">
+          {
+            fees.map(({ label, amount, note }) => (
+              <div class="flex items-baseline gap-2">
+                <dt class="font-semibold">{label}</dt>
+                <dd>
+                  <span class="font-bold text-wx-teal-ink">{money(amount)}</span>
+                  {note && <span class="text-sm text-slate-500">（{note}）</span>}
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+      </section>
+
+      <!-- Levels: AstroWind Steps widget, like the AI page's modules -->
+      <div class="bg-wx-teal-mist">
+        <Steps
+          id="levels"
+          tagline='<span class="text-wx-orange">从零基础到高级，共 6 个等级</span>'
+          title="课程等级"
+          subtitle="每个等级 3 个月。授课精彩，注重口语，使你在短时间内快速的掌握英文！"
+          items={levels.map(({ name, description }, i) => ({
+            title: `${i + 1}. <span class="font-medium">${name}</span>`,
+            description,
+            icon: i === levels.length - 1 ? 'tabler:trophy' : 'tabler:circle-check',
+            classes: { icon: 'text-wx-teal border-wx-teal', title: 'text-wx-teal-ink' },
+          }))}
+          image={{ src: studyGroup, alt: '学生一起学习英语' }}
+          classes={{ container: 'scroll-mt-20' }}
+        />
+      </div>
+
+      <!-- Schedule: three classes with the same weekly content, attend any of them -->
+      <section id="schedule" class="scroll-mt-20 max-w-6xl mx-auto px-4 sm:px-6 pt-14 md:pt-20">
+        <p class="text-wx-orange font-semibold tracking-wide text-center">每周进度课 4 小时</p>
+        <h2 class="mt-2 text-4xl md:text-5xl font-black text-wx-teal-ink text-center">上课时间</h2>
+        <div class="mt-10 grid md:grid-cols-3 gap-6">
+          {
+            classes.map(({ name, icon, rhythm, times }) => (
+              <article class="flex flex-col rounded-2xl border-t-4 border-wx-teal bg-white p-6 md:p-8 shadow-md">
+                <Icon name={icon} class="h-10 w-10 text-wx-orange" />
+                <h3 class="mt-4 text-2xl font-bold text-wx-teal-ink">{name}</h3>
+                <p class="mt-1 text-slate-600">{rhythm}</p>
+                <ul class="mt-5 grid gap-2">
+                  {times.map((t) => (
+                    <li class="rounded-xl bg-wx-teal-mist px-4 py-2 text-lg font-bold text-wx-teal-ink">{t}</li>
+                  ))}
+                </ul>
+              </article>
+            ))
+          }
+        </div>
+        <p class="mt-5 text-center text-slate-600">
+          另有下午时段：{afternoonSlots.join('　·　')}
+        </p>
+        <div
+          class="mt-8 flex flex-col sm:flex-row items-start gap-4 rounded-3xl bg-wx-pill-yellow/25 border-2 border-wx-pill-yellow px-6 py-6 md:px-8"
+        >
+          <Icon name="tabler:repeat" class="h-10 w-10 shrink-0 text-wx-orange" />
+          <div>
+            <p class="text-2xl font-black text-wx-teal-ink">一份学费，三个班都能上</p>
+            <p class="mt-2 text-lg leading-relaxed text-slate-700">
+              早班、晚班、礼拜天班一周之内教的是一样的内容。在你报读的等级里，哪个时间方便就上哪个班；有时间的话三个班都可以来重复上，不重复收费。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Course types -->
+      <section id="courses" class="scroll-mt-20 max-w-6xl mx-auto px-4 sm:px-6 py-14 md:py-20">
+        <p class="text-wx-orange font-semibold tracking-wide text-center">免费试听</p>
+        <h2 class="mt-2 text-4xl md:text-5xl font-black text-wx-teal-ink text-center">课程类别</h2>
+        <div class="mt-10 grid md:grid-cols-3 gap-6">
+          {
+            courses.map(({ title, note, icon, body, tags }) => (
+              <article class="flex flex-col rounded-2xl border-t-4 border-wx-pill-red bg-white p-6 md:p-8 shadow-md">
+                <Icon name={icon} class="h-10 w-10 text-wx-teal" />
+                <h3 class="mt-4 text-2xl font-bold text-wx-teal-ink">{title}</h3>
+                <p class="mt-1 text-sm font-semibold text-wx-orange">（{note}）</p>
+                <p class="mt-4 leading-relaxed text-slate-700">{body}</p>
+                {tags.length > 0 && (
+                  <ul class="mt-5 flex flex-wrap gap-2">
+                    {tags.map((t) => (
+                      <li class="rounded-full bg-wx-teal-mist px-4 py-1.5 text-sm font-semibold text-wx-teal-ink">
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+            ))
+          }
+        </div>
+      </section>
+
+      <!-- About / features -->
+      <section class="bg-wx-teal-mist">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-14 md:py-20 grid md:grid-cols-2 gap-10 md:gap-14 items-center">
+          <div>
+            <p class="text-lg leading-relaxed text-slate-700">
+              我们拥有专业、经验丰富、有趣的英语老师和最佳的成人英文教材，让您轻松快速地掌握流利英语！我们的英语老师专注于课程设计和学生语言能力的发展。他们的热情和专业精神将帮助您开拓更大的英语语言学习空间，更有效地提高您的英语应用能力和专业领域的技能。
+            </p>
+            <p class="mt-4 text-lg leading-relaxed text-slate-700">
+              无论您是学习零基础课，还是雅思预备英语课程，我们的英语课程都能针对性地帮助您。
+            </p>
+            <div class="mt-8 overflow-hidden rounded-3xl shadow-lg">
+              <Image
+                src={adultClass}
+                alt="成人学员在课堂上"
+                class="w-full h-64 md:h-72 object-cover"
+                widths={[400, 700, 1000]}
+                sizes="(min-width: 768px) 45vw, 90vw"
+              />
+            </div>
+          </div>
+          <div>
+            <h2 class="text-3xl md:text-4xl font-black text-wx-pill-red">我校英语课程的特点</h2>
+            <p class="mt-5 text-lg leading-relaxed text-slate-700">
+              丰富有趣的英文课堂上实景演练，会让您更快地掌握口语和语法；精彩的实例讨论沟通，是理论结合实践的极佳学习英语环境。
+            </p>
+            <p class="mt-4 text-lg leading-relaxed text-slate-700">
+              英语是新加坡的第一语言。我们的英语课程采用优质精华小班，最近距离交流，最亲切体会。5 到 10
+              人一班，让每个学生在互动中有效、快速地提高英语沟通能力和自信心。我们的英语教师拥有专业资质和丰富的英语教学经验，将为您营造轻松自由的英文学习环境。
+            </p>
+            <div class="mt-8 grid grid-cols-2 gap-4">
+              <div class="rounded-full bg-wx-teal text-white px-6 py-5 text-center shadow">
+                <p class="text-sm text-wx-teal-mist">班级人数</p>
+                <p class="text-xl sm:text-2xl font-bold whitespace-nowrap">5–10 人一班</p>
+              </div>
+              <div class="rounded-full bg-wx-orange text-white px-6 py-5 text-center shadow">
+                <p class="text-sm text-white/85">课程等级</p>
+                <p class="text-xl sm:text-2xl font-bold whitespace-nowrap">6 个等级</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Enquiry CTA -->
+      <section class="max-w-6xl mx-auto px-4 sm:px-6 py-14 md:py-16">
+        <div
+          class="rounded-3xl bg-wx-teal px-6 py-8 md:px-10 flex flex-col md:flex-row md:items-center justify-between gap-6 text-white"
+        >
+          <div>
+            <p class="text-2xl font-bold">想了解课程详情，或预约免费试听？</p>
+            <p class="mt-1 text-wx-teal-mist">留下联系方式，我们会尽快与您联系，并为您安排免费试听。</p>
+          </div>
+          <div class="flex flex-wrap gap-3 shrink-0">
+            <a
+              href={trialHref}
+              data-tally={tallyFormId || undefined}
+              class="inline-flex items-center justify-center gap-2 rounded-full bg-wx-orange px-7 py-3 font-semibold text-white shadow hover:bg-wx-teal-ink transition"
+            >
+              免费试听
+              <Icon name="tabler:headset" class="w-5 h-5" />
+            </a>
+            <a
+              href={enquireHref}
+              data-tally={tallyFormId || undefined}
+              class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3 font-semibold text-wx-teal-ink shadow hover:bg-wx-teal-mist transition"
+            >
+              了解更多
+              <Icon name="tabler:arrow-right" class="w-5 h-5" />
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Contact: dark footer band -->
+    <footer id="contact" class="scroll-mt-20 relative overflow-hidden bg-wx-teal-ink text-white">
+      <div class="absolute -top-28 -left-24 h-72 w-[60%] rounded-full bg-wx-teal" aria-hidden="true"></div>
+      <div class="relative max-w-6xl mx-auto px-4 sm:px-6 py-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div class="flex gap-4">
+          <Icon name="tabler:map-pin" class="h-7 w-7 shrink-0 text-wx-pill-yellow" />
+          <div>
+            <p class="font-bold text-lg">地址</p>
+            <address class="not-italic mt-1 text-slate-200 leading-relaxed">
+              International Plaza<br />10 Anson Road #25-07<br />Singapore 079903<br />Tanjong Pagar
+            </address>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <Icon name="tabler:phone" class="h-7 w-7 shrink-0 text-wx-pill-yellow" />
+          <div>
+            <p class="font-bold text-lg">Tel</p>
+            <p class="mt-1 text-slate-200">
+              <a href={`tel:+65${tel[0]}`} class="hover:text-white hover:underline underline-offset-4">{tel[0]}</a>
+              {' / '}
+              <a href={`tel:+65${tel[1]}`} class="hover:text-white hover:underline underline-offset-4">{tel[1]}</a>
+            </p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <Icon name="tabler:mail" class="h-7 w-7 shrink-0 text-wx-pill-yellow" />
+          <div class="min-w-0">
+            <p class="font-bold text-lg">Email</p>
+            <a
+              href={`mailto:${email}`}
+              class="mt-1 block text-slate-200 break-all hover:text-white hover:underline underline-offset-4">{email}</a
+            >
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <Icon name="tabler:brand-whatsapp" class="h-7 w-7 shrink-0 text-wx-pill-yellow" />
+          <div>
+            <p class="font-bold text-lg">WhatsApp</p>
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener"
+              class="mt-1 block text-slate-200 hover:text-white hover:underline underline-offset-4"
+              >{`${whatsapp.slice(2, 6)} ${whatsapp.slice(6)}`}</a
+            >
+          </div>
+        </div>
+      </div>
+      <div class="relative border-t border-white/15">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex gap-4">
+          <Icon name="tabler:train" class="h-7 w-7 shrink-0 text-wx-pill-yellow" />
+          <div>
+            <p class="font-bold text-lg">怎么来</p>
+            <p class="mt-1 text-slate-200 leading-relaxed">
+              丹戎巴葛地铁站（绿线 EW15）C 出口，大华银行楼上的凯联大厦（International Plaza）25 楼 #25-07。<br
+              />进大门后找到 18 部电梯的地方，从蓝色墙面这边的区域上电梯，直接到学校。
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="relative border-t border-white/15">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-5 flex items-center gap-3 text-sm text-slate-300">
+          <Image src={logo} alt="" class="h-6 w-auto rounded-sm bg-white p-0.5" />
+          汶轩教育管理学院
+        </div>
+      </div>
+    </footer>
+
+    <WhatsAppButton number={whatsapp} message={whatsappMessage} />
+  </div>
+
+  <!-- Tally popup: any link with data-tally="<formId>" opens the form; without the script it falls back to href -->
+  <script is:inline src="https://tally.so/widgets/embed.js" async></script>
+  <script is:inline>
+    window.__tallyListener ||
+      ((window.__tallyListener = true),
+      document.addEventListener('click', (event) => {
+        const link = event.target.closest && event.target.closest('[data-tally]');
+        if (!link || !link.dataset.tally || !window.Tally) return;
+        event.preventDefault();
+        window.Tally.openPopup(link.dataset.tally, {
+          layout: 'modal',
+          width: 700,
+          autoClose: 3000,
+          hiddenFields: { originPage: location.pathname },
+        });
+      }));
+  </script>
+</Layout>
+
+<style>
+  /* The flyer's teal panel has a large curved right edge; on phones it curves along the bottom */
+  .wx-panel {
+    border-radius: 0 0 50% 50% / 0 0 3rem 3rem;
+  }
+  @media (min-width: 768px) {
+    .wx-panel {
+      border-radius: 0 50% 45% 0 / 0 55% 45% 0;
+    }
+  }
+</style>

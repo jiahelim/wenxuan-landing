@@ -1,0 +1,361 @@
+---
+// AI 人工智能大专 landing page, rebuilt from the two-page flyer
+// (00_Sources/AI-Scan_20261029*.png). Copy is the flyer's Simplified Chinese
+// text only; images are cropped from the scans (src/assets/images/wenxuan/).
+// Palette: --color-wx-* in src/assets/styles/tailwind.css.
+import { Image } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
+
+import Layout from '~/layouts/Layout.astro';
+import Steps from '~/components/widgets/Steps.astro';
+import WhatsAppButton from '~/components/widgets/WhatsAppButton.astro';
+
+import logo from '~/assets/images/wenxuan/logo.png';
+import classroom from '~/assets/images/wenxuan/classroom.jpg';
+// Pexels photo 2678468 (free under the Pexels licence), replaces the low-res flyer crop class-photo.jpg
+import classPhoto from '~/assets/images/wenxuan/class-photo-pexels.jpg';
+// Pexels photo 8386440 by Tara Winstead (free under the Pexels licence), replaces the low-res flyer crop admission.jpg
+import admission from '~/assets/images/wenxuan/admission-pexels.jpg';
+
+const metadata = {
+  title: 'AI 人工智能大专 | 汶轩教育管理学院',
+  description:
+    '从人工智能基础出发，系统学习数据准备与可视化、机器学习基础、生成式人工智能应用，以及 AI 伦理、治理与项目实践。',
+  openGraph: { type: 'website' },
+};
+
+// Module descriptions:
+// 1 generic; 2, 3, 5 adapted from 教育部《人工智能技术应用专业教学标准（试行）》;
+// 4 from 杭州电子科技大学 MOOC「生成式人工智能应用基础」; 5 ethics topics from
+// 国家高等教育智慧教育平台「人工智能设计伦理」and 中国社科院大学「人工智能伦理与法治导论」.
+const modules = [
+  {
+    name: '人工智能基础',
+    description: '认识人工智能的发展历程、核心概念与主要应用领域，建立人工智能思维，为后续模块打下基础。',
+  },
+  {
+    name: '数据准备与可视化',
+    description:
+      '掌握文本、图像、视频、语音等数据的采集、清洗、标注与处理方法；使用 Python 的 NumPy、Pandas、Matplotlib 库完成数据分析，并用图表进行可视化展示。',
+  },
+  {
+    name: '机器学习基础',
+    description:
+      '掌握主流机器学习算法，具备模型选择、搭建、训练、测试和评估的能力；学习数据特征工程的基本方法，能使用机器学习方法挖掘数据信息。',
+  },
+  {
+    name: '生成式人工智能应用',
+    description:
+      '聚焦生成式AI的全栈技术链与应用生态，涵盖文本、图像、视频、音频四大内容生成领域；熟练操作DeepSeek、Stable Diffusion等主流工具，完成海报设计、数据分析、视频剪辑等真实场景任务。',
+  },
+  {
+    name: '人工智能伦理、治理与项目实践',
+    description:
+      '了解人工智能伦理问题、数据伦理与隐私保护，以及数据、算法与算力治理；通过综合项目，完成需求分析、方案设计、数据采集与清洗、模型训练与测试，以及项目文档编写。',
+  },
+];
+
+const academic = [
+  "4门 GCE 'O' 水准及格（C6或以上）",
+  '持有人工智能、信息技术、计算机、数据科学、数字技术或相关学科证书',
+  '成熟申请人：年满30岁，且具备至少8年相关工作经验',
+  '其他同等学历者，将按个案考虑',
+];
+
+const chinese = ["GCE 'O' 水准中文（C6或以上）", '相当于10年级的中文语言能力', 'HSK（五级）', '同等中文语言资格'];
+
+const facts = [
+  { label: '学制', value: '6个月' },
+  { label: '上课模式', value: '每4周滚动开班' },
+  { label: '上课时间', value: '早班 / 晚班 / 星期天班' },
+];
+
+const tel = ['65183373', '65183393'];
+const email = 'wenxuansch@gmail.com';
+// WhatsApp (mobile), international format without '+': 65 + 9646 1887
+const whatsapp = '6596461887';
+const whatsappMessage = '您好，我想了解 AI 人工智能大专课程。';
+const whatsappHref = `https://wa.me/${whatsapp}?text=${encodeURIComponent(whatsappMessage)}`;
+// Tally form for "了解更多" enquiries. Paste the form ID from tally.so/r/<ID> here.
+// While empty, the buttons fall back to opening an email.
+const tallyFormId = 'kblK0Z';
+const enquireHref = `mailto:${email}?subject=${encodeURIComponent('咨询：AI 人工智能大专')}`;
+---
+
+<Layout metadata={metadata}>
+  <div lang="zh-Hans" class="bg-white text-slate-800">
+    <!-- Header: logo + school name, as on the flyer's top right -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-200">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+        <a href="#top" class="flex items-center gap-3 min-w-0">
+          <Image src={logo} alt="汶轩教育管理学院校徽" class="h-10 w-auto shrink-0" loading="eager" />
+          <span class="font-bold text-wx-deep text-lg truncate">汶轩教育管理学院</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+          <a href="#modules" class="hover:text-wx-deep">核心模块</a>
+          <a href="#admission" class="hover:text-wx-deep">入学要求</a>
+          <a href="#contact" class="hover:text-wx-deep">地址</a>
+        </nav>
+        <div class="flex shrink-0 items-center gap-2">
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener"
+            aria-label="WhatsApp 咨询"
+            class="hidden sm:inline-flex items-center gap-2 rounded-full border-2 border-[#25d366] px-4 py-1.5 text-sm font-semibold text-[#128c7e] hover:bg-[#25d366]/10 transition"
+          >
+            <Icon name="tabler:brand-whatsapp" class="w-4 h-4" />
+            {whatsapp.slice(2)}
+          </a>
+          <a
+            href={enquireHref}
+            data-tally={tallyFormId || undefined}
+            class="inline-flex items-center gap-2 rounded-full bg-wx-deep px-4 py-2 text-sm font-semibold text-white hover:bg-wx-ink transition"
+          >
+            了解更多
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- Hero: photos in a blue curved panel on the left, title on the right -->
+      <section class="relative overflow-hidden">
+        <div
+          class="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16 grid md:grid-cols-[1fr_1.1fr] gap-12 md:gap-14 items-center"
+        >
+          <!-- Photo panel -->
+          <div class="relative order-2 md:order-1 mx-auto w-full max-w-md md:max-w-none">
+            <div class="wx-panel absolute -left-4 right-6 -top-6 bottom-6 md:-left-40 bg-wx-deep" aria-hidden="true">
+              <svg class="absolute top-5 right-8 w-36 h-20 text-wx-sky/80" viewBox="0 0 160 96" fill="none">
+                <path
+                  d="M10 70 L50 30 L90 55 L130 15 L150 60 M50 30 L70 80 L90 55 M90 55 L130 80"
+                  stroke="currentColor"
+                  stroke-width="1.2"></path>
+                <g fill="currentColor">
+                  <circle cx="10" cy="70" r="5"></circle><circle cx="50" cy="30" r="6"></circle>
+                  <circle cx="90" cy="55" r="7"></circle><circle cx="130" cy="15" r="5"></circle>
+                  <circle cx="150" cy="60" r="4"></circle><circle cx="70" cy="80" r="5"></circle>
+                  <circle cx="130" cy="80" r="4"></circle>
+                </g>
+              </svg>
+            </div>
+            <div class="relative pt-20 pb-8">
+              <div class="aspect-square w-[82%] rounded-full overflow-hidden ring-8 ring-wx-deep shadow-xl">
+                <Image
+                  src={classroom}
+                  alt="人工智能课堂"
+                  class="w-full h-full object-cover"
+                  loading="eager"
+                  fetchpriority="high"
+                />
+              </div>
+              <div
+                class="absolute right-0 bottom-0 aspect-square w-[50%] rounded-full overflow-hidden ring-8 ring-wx-deep shadow-xl bg-wx-deep"
+              >
+                <Image src={classPhoto} alt="汶轩教育管理学院上课情景" class="w-full h-full object-cover scale-110" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Title block -->
+          <div class="order-1 md:order-2 md:text-right">
+            <p class="text-wx-deep font-semibold tracking-wide">汶轩教育管理学院</p>
+            <h1 class="mt-2 text-5xl sm:text-6xl lg:text-7xl font-black leading-tight text-wx-deep">AI 人工智能大专</h1>
+            <p class="mt-6 text-lg leading-relaxed text-slate-600 md:ml-auto max-w-xl">
+              从人工智能基础出发，系统学习数据准备与可视化、机器学习基础、生成式人工智能应用，以及 AI
+              伦理、治理与项目实践。
+            </p>
+            <div class="mt-8 flex flex-wrap gap-3 md:justify-end">
+              <a
+                href={enquireHref}
+                data-tally={tallyFormId || undefined}
+                class="inline-flex items-center gap-2 rounded-full bg-wx-deep px-6 py-3 font-semibold text-white shadow hover:bg-wx-ink transition"
+              >
+                了解更多
+                <Icon name="tabler:arrow-right" class="w-5 h-5" />
+              </a>
+              <a
+                href="#modules"
+                class="inline-flex items-center gap-2 rounded-full border-2 border-wx-deep px-6 py-3 font-semibold text-wx-deep hover:bg-wx-mist transition"
+              >
+                核心模块
+                <Icon name="tabler:arrow-down" class="w-5 h-5" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Core modules: AstroWind Steps widget (same style as "The flow" on /landing/lead-generation) -->
+      <Steps
+        id="modules"
+        tagline="授课：华文/英语"
+        title="核心模块"
+        items={modules.map(({ name, description }, i) => ({
+          title: `${i + 1}. <span class="font-medium">${name}</span>`,
+          description,
+          icon: i === modules.length - 1 ? 'tabler:check' : 'tabler:circle-check',
+        }))}
+        image={{ src: classPhoto, alt: '汶轩教育管理学院上课情景' }}
+        classes={{ container: 'scroll-mt-20' }}
+      />
+
+      <!-- Key facts: the flyer's rounded pills, below the modules as on the flyer -->
+      <section class="max-w-5xl mx-auto px-4 sm:px-6 pb-14 md:pb-20">
+        <div class="grid sm:grid-cols-3 gap-4">
+          {
+            facts.map(({ label, value }) => (
+              <div class="rounded-full bg-wx-deep text-white px-6 py-5 text-center shadow">
+                <p class="text-sm text-wx-sky">{label}</p>
+                <p class="text-xl lg:text-2xl font-bold">{value}</p>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <!-- Admission requirements -->
+      <section id="admission" class="scroll-mt-20 relative bg-wx-mist">
+        <div class="relative h-56 md:h-72 overflow-hidden">
+          <Image src={admission} alt="机械手触碰数据网络" class="absolute inset-0 w-full h-full object-cover object-[center_62%]" />
+          <div class="absolute inset-0 bg-gradient-to-r from-wx-ink/90 via-wx-deep/50 to-transparent"></div>
+          <div class="relative max-w-6xl mx-auto px-4 sm:px-6 h-full flex items-center">
+            <h2 class="text-4xl md:text-5xl font-black text-white">入学要求</h2>
+          </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-14 md:pb-20">
+          <div class="grid sm:grid-cols-2 gap-4 -mt-10 relative">
+            <div class="rounded-2xl bg-white p-6 shadow-lg flex items-center gap-4">
+              <Icon name="tabler:user" class="h-10 w-10 text-wx-deep" />
+              <div>
+                <p class="text-sm text-slate-500">最低年龄</p>
+                <p class="text-3xl font-black text-wx-deep">16岁</p>
+              </div>
+            </div>
+            <div class="rounded-2xl bg-white p-6 shadow-lg flex items-center gap-4">
+              <Icon name="tabler:language" class="h-10 w-10 text-wx-deep" />
+              <div>
+                <p class="text-sm text-slate-500">授课语言</p>
+                <p class="text-3xl font-black text-wx-deep">中文/英文</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 grid md:grid-cols-2 gap-6">
+            {
+              [
+                { title: '学历要求', items: academic },
+                { title: '中文语言要求', items: chinese },
+              ].map(({ title, items }) => (
+                <div class="rounded-2xl bg-white p-6 md:p-8 shadow-sm">
+                  <h3 class="text-xl font-bold text-wx-deep">
+                    {title}
+                    <span class="text-base font-semibold text-slate-500">（满足其一即可）</span>
+                  </h3>
+                  <ul class="mt-5 space-y-4">
+                    {items.map((item) => (
+                      <li class="flex gap-3">
+                        <Icon name="tabler:circle-check" class="mt-0.5 h-6 w-6 shrink-0 text-wx-deep" />
+                        <span class="leading-relaxed">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))
+            }
+          </div>
+
+          <!-- Enquiry CTA after the admission requirements -->
+          <div
+            class="mt-10 rounded-3xl bg-wx-deep px-6 py-8 md:px-10 flex flex-col md:flex-row md:items-center justify-between gap-6 text-white"
+          >
+            <div>
+              <p class="text-2xl font-bold">想了解课程详情或开课日期？</p>
+              <p class="mt-1 text-wx-sky">留下联系方式，我们会尽快与您联系。</p>
+            </div>
+            <a
+              href={enquireHref}
+              data-tally={tallyFormId || undefined}
+              class="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-white px-7 py-3 font-semibold text-wx-deep shadow hover:bg-wx-mist transition"
+            >
+              了解更多
+              <Icon name="tabler:arrow-right" class="w-5 h-5" />
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Contact: the flyer's dark blue footer band -->
+    <footer id="contact" class="scroll-mt-20 relative overflow-hidden bg-wx-ink text-white">
+      <div class="absolute -top-28 -left-24 h-72 w-[60%] rounded-full bg-wx-deep" aria-hidden="true"></div>
+      <div class="relative max-w-6xl mx-auto px-4 sm:px-6 py-14 grid md:grid-cols-3 gap-10">
+        <div class="flex gap-4">
+          <Icon name="tabler:map-pin" class="h-7 w-7 shrink-0 text-wx-sky" />
+          <div>
+            <p class="font-bold text-lg">地址</p>
+            <address class="not-italic mt-1 text-slate-200 leading-relaxed">
+              International Plaza<br />10 Anson Road #25-07<br />Singapore 079903
+            </address>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <Icon name="tabler:phone" class="h-7 w-7 shrink-0 text-wx-sky" />
+          <div>
+            <p class="font-bold text-lg">Tel</p>
+            <p class="mt-1 text-slate-200">
+              <a href={`tel:+65${tel[0]}`} class="hover:text-white hover:underline underline-offset-4">{tel[0]}</a>
+              {' / '}
+              <a href={`tel:+65${tel[1]}`} class="hover:text-white hover:underline underline-offset-4">{tel[1]}</a>
+            </p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <Icon name="tabler:mail" class="h-7 w-7 shrink-0 text-wx-sky" />
+          <div class="min-w-0">
+            <p class="font-bold text-lg">Email</p>
+            <a
+              href={`mailto:${email}`}
+              class="mt-1 block text-slate-200 break-all hover:text-white hover:underline underline-offset-4">{email}</a
+            >
+          </div>
+        </div>
+      </div>
+      <div class="relative border-t border-white/15">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-5 flex items-center gap-3 text-sm text-slate-300">
+          <Image src={logo} alt="" class="h-6 w-auto rounded-sm bg-white p-0.5" />
+          汶轩教育管理学院
+        </div>
+      </div>
+    </footer>
+
+    <WhatsAppButton number={whatsapp} message={whatsappMessage} />
+  </div>
+
+  <!-- Tally popup: any link with data-tally="<formId>" opens the form; without the script it falls back to href -->
+  <script is:inline src="https://tally.so/widgets/embed.js" async></script>
+  <script is:inline>
+    window.__tallyListener ||
+      ((window.__tallyListener = true),
+      document.addEventListener('click', (event) => {
+        const link = event.target.closest && event.target.closest('[data-tally]');
+        if (!link || !link.dataset.tally || !window.Tally) return;
+        event.preventDefault();
+        window.Tally.openPopup(link.dataset.tally, {
+          layout: 'modal',
+          width: 700,
+          autoClose: 3000,
+          hiddenFields: { originPage: location.pathname },
+        });
+      }));
+  </script>
+</Layout>
+
+<style>
+  /* The flyer's blue panel has a large curved right edge */
+  .wx-panel {
+    border-radius: 0 50% 45% 2.5rem / 0 40% 55% 2.5rem;
+  }
+</style>

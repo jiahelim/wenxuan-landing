@@ -1,0 +1,117 @@
+---
+// Course picker at the site root: a plain standalone page (no AstroWind layout) linking to the
+// two course landing pages. Recreated from the hand-written index.html that was live on
+// landing.wenxuan.edu.sg.
+import { getImage } from 'astro:assets';
+
+import logoSrc from '~/assets/images/wenxuan/logo.png';
+import favIcon from '~/assets/favicons/favicon.ico';
+import favIconSvg from '~/assets/favicons/favicon.svg';
+import appleTouchIcon from '~/assets/favicons/apple-touch-icon.png';
+
+const logo = await getImage({ src: logoSrc, width: 92, format: 'webp' });
+const canonical = new URL('/', Astro.site);
+
+const courses = [
+  {
+    href: '/landing/english-course/',
+    title: '英语口语课',
+    description: '固定美国外教名师，情景演练、小班教学，零基础到高级共 6 个等级，5 到 10 人一班。',
+  },
+  {
+    href: '/landing/ai-diploma/',
+    title: 'AI 人工智能大专',
+    description: '从人工智能基础出发，系统学习机器学习、生成式人工智能应用与项目实践。',
+  },
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>课程 | 汶轩教育管理学院</title>
+    <meta name="description" content="汶轩教育管理学院课程：英语口语课、AI 人工智能大专。" />
+    <link rel="canonical" href={canonical} />
+    <link rel="shortcut icon" href={favIcon} />
+    <link rel="icon" type="image/svg+xml" href={favIconSvg.src} />
+    <link rel="apple-touch-icon" sizes="180x180" href={appleTouchIcon.src} />
+    <meta name="color-scheme" content="light" />
+    <style is:inline>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 16px;
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+        background: #f5f8fc;
+        color: #1e293b;
+      }
+      main {
+        width: 100%;
+        max-width: 480px;
+        text-align: center;
+      }
+      img {
+        height: 72px;
+        width: auto;
+      }
+      h1 {
+        font-size: 1.4rem;
+        margin: 16px 0 28px;
+        color: #1d5a96;
+      }
+      a {
+        display: block;
+        text-decoration: none;
+        background: #fff;
+        border: 1px solid #d6e2ef;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 14px;
+        color: inherit;
+        text-align: left;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+      a:hover,
+      a:focus-visible {
+        border-color: #1d5a96;
+        box-shadow: 0 4px 14px rgba(29, 90, 150, 0.12);
+      }
+      strong {
+        display: block;
+        font-size: 1.1rem;
+        color: #1d5a96;
+        margin-bottom: 6px;
+      }
+      span {
+        font-size: 0.92rem;
+        color: #475569;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img src={logo.src} alt="汶轩教育管理学院校徽" width={logo.attributes.width} height={logo.attributes.height} />
+      <h1>汶轩教育管理学院</h1>
+      {
+        courses.map(({ href, title, description }) => (
+          <a href={href}>
+            <strong>{title} →</strong>
+            <span>{description}</span>
+          </a>
+        ))
+      }
+    </main>
+  </body>
+</html>

@@ -1,0 +1,78 @@
+---
+// Floating WhatsApp chat button, bottom right. Pattern taken from tenxway.com:
+// green circle, ripple pulse (off under reduced motion), wa.me link with a prefilled message.
+import { Icon } from 'astro-icon/components';
+
+export interface Props {
+  /** International format, digits only, e.g. 6591234567 */
+  number: string;
+  message?: string;
+  label?: string;
+}
+
+const { number, message = '', label = 'WhatsApp 咨询' } = Astro.props;
+const href = `https://wa.me/${number}${message ? `?text=${encodeURIComponent(message)}` : ''}`;
+---
+
+<a href={href} class="whatsapp-button" aria-label={label} title={label} target="_blank" rel="noopener">
+  <Icon name="tabler:brand-whatsapp" class="h-16 w-16" />
+</a>
+
+<style>
+  .whatsapp-button {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 7rem;
+    height: 7rem;
+    border-radius: 9999px;
+    color: #fff;
+    background-color: #25d366;
+    box-shadow: 0 4px 14px rgb(0 0 0 / 0.2);
+    transition:
+      transform 0.15s,
+      background-color 0.2s linear;
+  }
+  .whatsapp-button::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 9999px;
+    background: rgb(37 211 102 / 0.45);
+    opacity: 0;
+    pointer-events: none;
+    animation: whatsapp-ripple 1.2s cubic-bezier(0.4, 0, 0.2, 1) 1s infinite;
+  }
+  .whatsapp-button:hover {
+    background-color: #128c7e;
+    transform: scale(1.08);
+  }
+  .whatsapp-button:active {
+    background-color: #128c7e;
+    transition: none;
+  }
+  .whatsapp-button:focus-visible {
+    outline: 3px solid #128c7e;
+    outline-offset: 3px;
+  }
+  @keyframes whatsapp-ripple {
+    0% {
+      opacity: 0.6;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(2.5);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .whatsapp-button::after {
+      animation: none;
+    }
+  }
+</style>
