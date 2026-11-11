@@ -51,7 +51,7 @@ const price = { now: 980, was: 1280, extra: 600 };
 const bundles = levels.map((_, i) => {
   const count = i + 1;
   const total = price.now + price.extra * i;
-  return { count, total, saved: price.was * count - total, average: Math.round(total / count) };
+  return { count, total, saved: price.was * count - total };
 });
 const money = (n: number) => `$${n.toLocaleString('en-US')}`;
 const fees = [
@@ -269,63 +269,47 @@ const trialHref = `mailto:${email}?subject=${encodeURIComponent('预约免费试
           </ul>
         </div>
 
-        <!-- Bundle ladder -->
-        <div class="mt-14 text-center">
-          <p class="text-wx-orange font-semibold tracking-wide">特别优惠</p>
-          <h2 class="mt-2 text-4xl md:text-5xl font-black text-wx-teal-ink">多报多省</h2>
-          <p class="mt-4 text-lg text-slate-700">
-            第一个等级 {money(price.now)}，同时报名的每一个等级只加 {money(price.extra)}。
+        <!-- Bundle ladder: one compact strip, six cells -->
+        <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1 px-5 pt-4 pb-3">
+            <h2 class="text-2xl font-black text-wx-teal-ink">多报多省</h2>
+            <p class="text-slate-600">
+              同时多报，每加一个等级只加 <strong class="text-wx-pill-red">{money(price.extra)}</strong>
+            </p>
+          </div>
+          <ol class="grid grid-cols-3 md:grid-cols-6 gap-px bg-slate-200 border-y border-slate-200">
+            {
+              bundles.map(({ count, total, saved }) => {
+                const best = count === bundles.length;
+                return (
+                  <li class:list={['px-2 py-3 text-center', best ? 'bg-wx-teal text-white' : 'bg-white']}>
+                    <p class:list={['text-sm font-semibold', best ? 'text-wx-teal-mist' : 'text-slate-500']}>
+                      {count} 个等级
+                    </p>
+                    <p class:list={['text-2xl font-black', best ? 'text-white' : 'text-wx-pill-red']}>
+                      {money(total)}
+                    </p>
+                    <p class:list={['text-xs', best ? 'text-wx-pill-yellow font-bold' : 'text-slate-500']}>
+                      省 {money(saved)}
+                    </p>
+                  </li>
+                );
+              })
+            }
+          </ol>
+          <p class="px-5 py-3 text-sm text-slate-600">
+            另收
+            {
+              fees.map(({ label, amount, note }, i) => (
+                <>
+                  {i > 0 && '，'}
+                  {label} <strong class="text-wx-teal-ink">{money(amount)}</strong>
+                  {note && `（${note}）`}
+                </>
+              ))
+            }
           </p>
         </div>
-        <ol class="mt-8 grid grid-cols-2 md:grid-cols-3 gap-4">
-          {
-            bundles.map(({ count, total, saved, average }) => {
-              const best = count === bundles.length;
-              return (
-                <li
-                  class:list={[
-                    'relative rounded-2xl p-5 sm:p-6 shadow-md',
-                    best ? 'bg-wx-teal text-white ring-4 ring-wx-pill-yellow' : 'bg-white border border-slate-200',
-                  ]}
-                >
-                  {best && (
-                    <span class="absolute -top-3 right-4 rounded-full bg-wx-pill-yellow px-3 py-1 text-xs font-black text-slate-900 shadow">
-                      最划算
-                    </span>
-                  )}
-                  <p class:list={['font-semibold', best ? 'text-wx-teal-mist' : 'text-slate-500']}>
-                    {count === 1 ? '报一个等级' : `同时报 ${count} 个等级`}
-                  </p>
-                  <p class:list={['mt-1 text-4xl sm:text-5xl font-black', best ? 'text-white' : 'text-wx-pill-red']}>
-                    {money(total)}
-                  </p>
-                  <p class:list={['mt-2 text-sm', best ? 'text-wx-teal-mist' : 'text-slate-600']}>
-                    {count > 1 && (
-                      <>
-                        平均约 {money(average)} / 等级
-                        <br />
-                      </>
-                    )}
-                    比原价省 {money(saved)}
-                  </p>
-                </li>
-              );
-            })
-          }
-        </ol>
-        <dl class="mt-6 flex flex-wrap justify-center gap-x-8 gap-y-2 rounded-2xl bg-slate-50 px-5 py-4 text-slate-700">
-          {
-            fees.map(({ label, amount, note }) => (
-              <div class="flex items-baseline gap-2">
-                <dt class="font-semibold">{label}</dt>
-                <dd>
-                  <span class="font-bold text-wx-teal-ink">{money(amount)}</span>
-                  {note && <span class="text-sm text-slate-500">（{note}）</span>}
-                </dd>
-              </div>
-            ))
-          }
-        </dl>
       </section>
 
       <!-- Levels: AstroWind Steps widget, like the AI page's modules -->
