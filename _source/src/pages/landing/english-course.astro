@@ -547,11 +547,20 @@ const trialHref = `mailto:${email}?subject=${encodeURIComponent('预约免费试
         const link = event.target.closest && event.target.closest('[data-tally]');
         if (!link || !link.dataset.tally || !window.Tally) return;
         event.preventDefault();
-        window.Tally.openPopup(link.dataset.tally, {
+        // GTM: tally_form_open_<course> / tally_form_submit_<course> (english, ai); no answers are pushed
+        const formId = link.dataset.tally;
+        const course = { '5XbDoo': 'english', kblK0Z: 'ai' }[formId] || formId;
+        const track = (name) => {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({ event: `${name}_${course}`, form_id: formId, course });
+        };
+        window.Tally.openPopup(formId, {
           layout: 'modal',
           width: 700,
           autoClose: 3000,
           hiddenFields: { originPage: location.pathname },
+          onOpen: () => track('tally_form_open'),
+          onSubmit: () => track('tally_form_submit'),
         });
       }));
   </script>
