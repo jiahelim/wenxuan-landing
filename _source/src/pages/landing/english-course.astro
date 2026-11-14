@@ -5,7 +5,7 @@
 // Price, bundle ladder, six levels, class times and class size follow the school's Nov 2026 offer
 // message (00_Sources/eng_chi_class/offer_20261111.md), which supersedes the flyer on those points.
 // Palette: --color-wx-teal / --color-wx-orange / --color-wx-pill-* in src/assets/styles/tailwind.css.
-// Open questions for the client (price, 美国外教 claim, IELTS / full-time details,
+// Open questions for the client (price, IELTS / full-time details,
 // WeChat ID): see the transcription's notes. The WeChat ID and QR are left off until confirmed.
 import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
@@ -25,7 +25,7 @@ import studyGroup from '~/assets/images/wenxuan/english/study-group-pexels.jpg';
 const metadata = {
   title: '英语口语课 | 汶轩教育管理学院',
   description:
-    '固定美国外教名师，助你赢在口语起跑线。情景演练、小班教学、兴趣引导，零基础到高级共 6 个等级，现在优惠 $980 一个等级，5 到 10 人一班。',
+    '助你赢在口语起跑线。情景演练、小班教学、兴趣引导，零基础到高级共 6 个等级，现在优惠 $980 一个等级，5 到 10 人一班。',
   openGraph: { type: 'website' },
 };
 
@@ -169,7 +169,7 @@ const trialHref = `mailto:${email}?subject=${encodeURIComponent('预约免费试
               英语口语课
             </h1>
             <p class="mt-5 text-xl sm:text-2xl font-bold leading-snug">
-              固定美国外教名师<span class="hidden sm:inline">　</span><br class="sm:hidden" />助你赢在口语起跑线
+              助你赢在口语起跑线
             </p>
             <ul class="mt-7 flex flex-wrap gap-3">
               {
