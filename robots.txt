@@ -1,4 +1,0 @@
-User-agent: *
-Disallow:
-
-Sitemap: https://landing.wenxuan.edu.sg/sitemap-index.xml
